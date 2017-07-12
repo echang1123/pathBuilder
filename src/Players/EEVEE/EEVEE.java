@@ -13,9 +13,13 @@ public class EEVEE implements PlayerModulePart1{
     //FIELDS
 
     //Emily's test comment
+    //Eugene's test comment
 
     Map<String, Vertex<String>> graph;
 
+    public EEVEE(){
+
+    }
     /**
      * Has the player won?
      * @param playerId - player Id to test for winning path.
