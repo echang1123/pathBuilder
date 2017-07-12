@@ -50,11 +50,16 @@ public class EEVEE implements PlayerModulePart1{
      */
     @Override
     public void initPlayer(int dim, int playerId) {
-//        for(int r = 0; r < 2*dim+1; r++){
-//            for(int c = 0; c < 2*dim+1; c++){
-//
-//            }
-//        }
+        for(int r = 0; r < 2*dim+1; r++){
+            for(int c = 0; c < 2*dim+1; c++){
+                if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1)){
+                    Coordinate co = new Coordinate(r, c);
+                    Vertex v = graph.get(co);
+                    v.setData(0);
+                    //update edges also
+                }
+            }
+        }
     }
 
     /**
