@@ -28,6 +28,7 @@ public class EEVEE implements PlayerModulePart1{
                 }
                 graph.put(co, v);
             }
+        }
     }
     /**
      * Has the player won?
