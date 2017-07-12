@@ -37,9 +37,14 @@ public class Vertex<T> {
         neighbors.add(new Edge(this, neighbor, weight));
     }
 
+    public String toString(){
+        return "[Vertex pID: " + data + "] Neighbors: " + this.getNeighbors();
+    }
     public static void main(String[] args) {
-        Vertex v = new Vertex("A");
-        v.addNeighbor(new Vertex("B"), 2);
-        System.out.println(v.getNeighbors());
+//        Vertex v = new Vertex(1);
+//        v.addNeighbor(new Vertex(2), 2);
+//        v.addNeighbor(new Vertex(1), 2);
+//        System.out.println(v);
+//        System.out.println(v.getNeighbors());
     }
 }

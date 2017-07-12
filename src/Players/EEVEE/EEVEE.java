@@ -1,5 +1,6 @@
 package Players.EEVEE;
 
+import Interface.Coordinate;
 import Interface.PlayerModulePart1;
 import Interface.PlayerMove;
 
@@ -11,14 +12,22 @@ import java.util.Map;
  */
 public class EEVEE implements PlayerModulePart1{
     //FIELDS
+    Map<Coordinate, Vertex<Integer>> graph;
 
-    //Emily's test comment
-    //Eugene's test comment
-
-    Map<String, Vertex<String>> graph;
-
-    public EEVEE(){
-
+    public EEVEE(int dim){
+        graph = new HashMap<>();
+        for(int r = 0; r < 2*dim+1; r++){
+            for(int c = 0; c < 2*dim+1; c++){
+                Vertex v = new Vertex(0);
+                Coordinate co = new Coordinate(r, c);
+                if(r % 2 == 1 && c % 2 == 0){
+                    v.setData(1);
+                }
+                else if(r % 2 == 0 && c % 2 == 1){
+                    v.setData(2);
+                }
+                graph.put(co, v);
+            }
     }
     /**
      * Has the player won?
@@ -40,7 +49,11 @@ public class EEVEE implements PlayerModulePart1{
      */
     @Override
     public void initPlayer(int dim, int playerId) {
-
+//        for(int r = 0; r < 2*dim+1; r++){
+//            for(int c = 0; c < 2*dim+1; c++){
+//
+//            }
+//        }
     }
 
     /**
