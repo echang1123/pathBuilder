@@ -66,13 +66,6 @@ public class EEVEE implements PlayerModulePart1{
                 } else if (r % 2 == 0 && c % 2 == 1) {
                     graph.get(co).setData(2);
                 }
-//                else if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1)) {
-//                    graph.get(co).setData(0);
-//                    //update edges also
-//                }
-//                else if(graph.get(co).getData() == 1 || graph.get(co).getData() == 2){
-//                    graph.get(co).setData(0);
-//                }
             }
         }
     }
@@ -84,7 +77,10 @@ public class EEVEE implements PlayerModulePart1{
      */
     @Override
     public void lastMove(PlayerMove m) {
-
+        Vertex v = graph.get(m.getCoordinate());
+        v.setData(m.getPlayerId());
+        graph.put(m.getCoordinate(), v);
+        System.out.println("Player: " + Integer.toString(m.getPlayerId()) + ", " + m.getCoordinate());
     }
 
     @Override
