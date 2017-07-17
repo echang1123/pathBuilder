@@ -14,22 +14,22 @@ public class EEVEE implements PlayerModulePart1{
     //FIELDS
     Map<Coordinate, Vertex<Integer>> graph;
 
-    public EEVEE(int dim){
-        graph = new HashMap<>();
-        for(int r = 0; r < 2*dim+1; r++){
-            for(int c = 0; c < 2*dim+1; c++){
-                Vertex v = new Vertex(0);
-                Coordinate co = new Coordinate(r, c);
-                if(r % 2 == 1 && c % 2 == 0){
-                    v.setData(1);
-                }
-                else if(r % 2 == 0 && c % 2 == 1){
-                    v.setData(2);
-                }
-                graph.put(co, v);
-            }
-        }
-    }
+//    public EEVEE(int dim){
+//        graph = new HashMap<>();
+//        for(int r = 0; r < 2*dim+1; r++){
+//            for(int c = 0; c < 2*dim+1; c++){
+//                Vertex v = new Vertex(0);
+//                Coordinate co = new Coordinate(r, c);
+//                if(r % 2 == 1 && c % 2 == 0){
+//                    v.setData(1);
+//                }
+//                else if(r % 2 == 0 && c % 2 == 1){
+//                    v.setData(2);
+//                }
+//                graph.put(co, v);
+//            }
+//        }
+//    }
     /**
      * Has the player won?
      * @param playerId - player Id to test for winning path.
@@ -49,15 +49,30 @@ public class EEVEE implements PlayerModulePart1{
      * @param playerId - player id (1 or 2)
      */
     @Override
-    public void initPlayer(int dim, int playerId) {
-        for(int r = 0; r < 2*dim+1; r++){
-            for(int c = 0; c < 2*dim+1; c++){
-                if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1)){
-                    Coordinate co = new Coordinate(r, c);
-                    Vertex v = graph.get(co);
-                    v.setData(0);
-                    //update edges also
+    public void initPlayer(int dim, int playerId) {/*wasn't sure if we NEED to use playerId*/
+        graph = new HashMap<>();
+        for (int r = 0; r < 2 * dim + 1; r++) {
+            for (int c = 0; c < 2 * dim + 1; c++) {
+                Vertex v = new Vertex(0);
+                Coordinate co = new Coordinate(r, c);
+                graph.put(co, v);
+            }
+        }
+        for (int r = 0; r < 2 * dim + 1; r++) {
+            for (int c = 0; c < 2 * dim + 1; c++) {
+                Coordinate co = new Coordinate(r, c);
+                if (r % 2 == 1 && c % 2 == 0) {
+                    graph.get(co).setData(1);
+                } else if (r % 2 == 0 && c % 2 == 1) {
+                    graph.get(co).setData(2);
                 }
+//                else if((r % 2 == 0 && c % 2 == 0) || (r % 2 == 1 && c % 2 == 1)) {
+//                    graph.get(co).setData(0);
+//                    //update edges also
+//                }
+//                else if(graph.get(co).getData() == 1 || graph.get(co).getData() == 2){
+//                    graph.get(co).setData(0);
+//                }
             }
         }
     }
