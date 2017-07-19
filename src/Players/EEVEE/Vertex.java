@@ -25,16 +25,24 @@ public class Vertex<T> {
         this.data = newdata;
     }
 
-    public List<Vertex<T>> getNeighbors(){
+    //getter for Vertex's neighbors field
+    public List<Edge> getNeighbors(){
+        return neighbors;
+    }
+
+    //eaw 7.19 updated to have bi-directional edges when adding new neighbor vertex- setter for neighbors field
+    public void addNeighbor(Vertex<T> neighbor, int weight){
+        neighbors.add(new Edge(this, neighbor, weight));
+        neighbor.getNeighbors().add(new Edge(neighbor, this, weight));
+    }
+
+    //returns list of adjacent vertices
+    public List<Vertex<T>> getNeighborList(){
         List<Vertex<T>> vertices = new ArrayList<>(neighbors.size());
         for(Edge e:neighbors){
             vertices.add((Vertex<T>)e.getTo());
         }
         return vertices;
-    }
-
-    public void addNeighbor(Vertex<T> neighbor, int weight){
-        neighbors.add(new Edge(this, neighbor, weight));
     }
 
     public String toString(){
