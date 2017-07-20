@@ -37,7 +37,7 @@ public class Vertex<T> {
     }
 
     //returns list of adjacent vertices
-    public List<Vertex<T>> getNeighborList(){
+    public List<Vertex<T>> getNeighborVertices(){
         List<Vertex<T>> vertices = new ArrayList<>(neighbors.size());
         for(Edge e:neighbors){
             vertices.add((Vertex<T>)e.getTo());

@@ -137,40 +137,78 @@ public class EEVEE implements PlayerModulePart1{
             }
         }
 
+        //EUGENE'S IMPLEMENTATION
+        /*graph = new HashMap<>();
+        //set entire graph to 0
+        for (int r = 0; r < 2 * dim + 1; r++) {
+            for (int c = 0; c < 2 * dim + 1; c++) {
+                Vertex v = new Vertex(0);
+                Coordinate co = new Coordinate(r, c);
+                graph.put(co, v);
+            }
+        }
+        //set up player nodes for BOTH player 1 and player 2
+        for (int r = 0; r < 2 * dim + 1; r++) {
+            for (int c = 0; c < 2 * dim + 1; c++) {
+                Coordinate co = new Coordinate(r, c);
+                //odd row and even column
+                if (r % 2 == 1 && c % 2 == 0) {
+                    graph.get(co).setData(1);
+                }
+                //even row and odd column
+                else if (r % 2 == 0 && c % 2 == 1) {
+                    graph.get(co).setData(2);
+                }
+                //check to see if it's not a corner node
+                if(!(((r == 0 && c == 0) || (r == 2*dim && c == 0)) || (r == 0 && c == 2*dim) || (r == 2*dim && c < 2*dim))){
+                    Vertex curr = graph.get(co);
+                    Vertex north = graph.get(new Coordinate(r-2, c));
+                    Vertex east = graph.get(new Coordinate(r, c+2));
+                    Vertex south = graph.get(new Coordinate(r+2, c));
+                    Vertex west = graph.get(new Coordinate(r, c-2));
+                    if(r == 0){
+                        //top left blue node
+                        if(c == 1){
+                            curr.addNeighbor(south, 1);
+                            curr.addNeighbor(east, 0);
+                        }
+                        //top right blue node
+                        else if(c == 2*dim-1){
+                            curr.addNeighbor(south, 1);
+                            curr.addNeighbor(west, 0);
+                        }
+                        //rest of top blue nodes
+                        else{
+                            if(c % 2 == 1){
+                                curr.addNeighbor(east, 0);
+                                curr.addNeighbor(south, 1);
+                                curr.addNeighbor(west, 0);
+                            }
+                        }
+                    }
+                    else if(r == 1){
+                        //top left red node
+                        if(c == 0){
+                            curr.addNeighbor(east, 1);
+                            curr.addNeighbor(south, 0);
+                        }
+                        //top right red node
+                        else if(c == 2*dim){
+                            curr.addNeighbor(west, 1);
+                            curr.addNeighbor(south, 0);
+                        }
+                        else{
+                            if(c % 2 == 0){
+                                curr.addNeighbor(east, 1);
+                                curr.addNeighbor(south, 1);
+                                curr.addNeighbor(west, 1);
+                            }
+                        }
+                    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //OLD initPlayer
-//        for (int r = 0; r < 2 * dim + 1; r++) {
-//            for (int c = 0; c < 2 * dim + 1; c++) {
-//                Vertex v = new Vertex(0);
-//                Coordinate co = new Coordinate(r, c);
-//                graph.put(co, v);
-//            }
-//        }
-//        for (int r = 0; r < 2 * dim + 1; r++) {
-//            for (int c = 0; c < 2 * dim + 1; c++) {
-//                Coordinate co = new Coordinate(r, c);
-//                if (r % 2 == 1 && c % 2 == 0) {
-//                    graph.get(co).setData(1);
-//                } else if (r % 2 == 0 && c % 2 == 1) {
-//                    graph.get(co).setData(2);
-//                }
-//            }
-//        }
+                }
+            }
+        }*/
     }
 
     /**
