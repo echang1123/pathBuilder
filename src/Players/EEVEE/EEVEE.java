@@ -29,6 +29,7 @@ public class EEVEE implements PlayerModulePart1{
      */
     @Override
     public boolean hasWonGame(int playerId) {
+
         //boolean hasWon = false;
 
 
@@ -45,6 +46,15 @@ public class EEVEE implements PlayerModulePart1{
 
         for(Coordinate c:graphKeys){ //make a hashmap with all of the vertices and set initial prevs+weights, make list of all vertices
             Vertex v = graph.get(c);
+
+
+/*
+            List<Edge> edges = v.getNeighbors();
+            for(Edge e : edges) {
+                System.out.println("----------Coordinate " + c.toString() + "Vertex " + v + "Edge weight: " + e.getWeight()); //REMOVE
+            }
+  */
+
             Tuple tuple = new Tuple(null, Integer.MAX_VALUE);
             if(playerId == 1 && c.getRow() == 1 && c.getCol() ==0){ //player1 starts at coordinate (1,0)
                     tuple = new Tuple(v, 0); //at start coordinate for P1, set prev to self, weight to 0
@@ -55,9 +65,6 @@ public class EEVEE implements PlayerModulePart1{
                     start = v;
             }
             paths.put(v, tuple);
-            if(tuple.getVertex() != null) {
-                System.out.println("VERTEX: " + v.toString() + " TUPLE: " + tuple.toString());
-            }//REMOVE
             vertices.add(v);
         }
         boolean first = true;
@@ -144,8 +151,10 @@ public class EEVEE implements PlayerModulePart1{
     public Vertex closestVertex(List<Vertex> vertices, Map<Vertex, Tuple> paths){
         Vertex min = vertices.get(0);
         int currentMinWeight = paths.get(min).getWeight();
+        System.out.println("Current Min Weight: " + currentMinWeight); //REMOVE
         for(Vertex v : vertices){
             int currentWeight = paths.get(v).getWeight();
+            System.out.println("Current Weight: "+ currentWeight); //REMOVE
             if(currentMinWeight>currentWeight){
                 min = v;
                 currentMinWeight = currentWeight;
@@ -313,17 +322,20 @@ public class EEVEE implements PlayerModulePart1{
      */
     @Override
     public void lastMove(PlayerMove m) {
+        int player = m.getPlayerId();
         Vertex move = graph.get(m.getCoordinate()); //get move vertex to update
-        move.setData(m.getPlayerId()); //update owner
+        move.setData(player); //update owner
         List<Edge> neighbors = move.getNeighbors(); //get all of this vertex's neighbor edges
 
         for(Edge e:neighbors){ //loop through neighbors and update edge weights
             Vertex neighbor = e.getTo();
-            if(neighbor.getData() == move.getData()){
-                e.setWeight(0); //if neighbor is same player, weight to zero
+            if((Integer)neighbor.getData() == player){
+                e.setWeight(0); //if neighbor is same player, weight to zero //DOES THIS RESET THE RIGHT THING??
+                System.out.println(neighbor.toString() + " Edge set to " + e.getWeight()); //REMOVE
             }
             else{
-                e.setWeight(10); //if neighbor other player, weight to max
+                e.setWeight(1000); //if neighbor other player, weight to max
+                System.out.println(neighbor.toString() + " Edge set to " + e.getWeight()); //REMOVE
             }
         }
         graph.put(m.getCoordinate(), move); //put newly updated vertex back into graph/board representation
