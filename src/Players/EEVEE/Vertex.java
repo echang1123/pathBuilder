@@ -46,7 +46,7 @@ public class Vertex<T> {
     }
 
     public String toString(){
-        return "[Vertex pID: " + data + "] Neighbors: " + this.getNeighbors();
+        return "[Vertex pID: " + data + "] Neighbors: "; //+ this.getNeighbors(); //REMOVE
     }
     public static void main(String[] args) {
 //        Vertex v = new Vertex(1);
