@@ -8,6 +8,9 @@ import java.util.*;
 
 /**
  * Created by Eugene on 7/11/2017.
+ *
+ * Team EEVEE- Emily Wesosn and Eugene Chang
+ * 
  */
 public class EEVEE implements PlayerModulePart1{
 
