@@ -17,20 +17,23 @@ public class Vertex<T> {
         neighbors = new ArrayList<>();
     }
 
+    //getter
     public T getData(){
         return data;
     }
 
+    //setter
     public void setData(T newdata){
         this.data = newdata;
     }
 
-    //getter for Vertex's neighbors field
+    //getter for the neighbors field
     public List<Edge> getNeighbors(){
         return neighbors;
     }
 
-    //eaw 7.19 updated to have bi-directional edges when adding new neighbor vertex- setter for neighbors field
+    //eaw 7.19 updated to have bi-directional edges when adding new neighbor vertex-
+    // setter for neighbors field
     public void addNeighbor(Vertex<T> neighbor, int weight){
         neighbors.add(new Edge(this, neighbor, weight));
         neighbor.getNeighbors().add(new Edge(neighbor, this, weight));
@@ -45,14 +48,9 @@ public class Vertex<T> {
         return vertices;
     }
 
+    @Override
     public String toString(){
         return "[Vertex pID: " + data + "] Neighbors: "; //+ this.getNeighbors(); //REMOVE
     }
-    public static void main(String[] args) {
-//        Vertex v = new Vertex(1);
-//        v.addNeighbor(new Vertex(2), 2);
-//        v.addNeighbor(new Vertex(1), 2);
-//        System.out.println(v);
-//        System.out.println(v.getNeighbors());
-    }
+
 }

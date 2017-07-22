@@ -16,6 +16,7 @@ public class Edge<T> {
         this.weight = weight;
     }
 
+    //getters
     public Vertex<T> getFrom(){
         return from;
     }
@@ -28,18 +29,18 @@ public class Edge<T> {
         return weight;
     }
 
+    //setters
     public void setFrom(Vertex<T> f){
         from = f;
     }
-
     public void setTo(Vertex<T> t){
         to = t;
     }
-
     public void setWeight(int w){
         weight = w;
     }
 
+    @Override
     public String toString(){
         return "Edge " + "from " + from + " to " + to + " [Weight" + ": " + weight + "]";
     }
