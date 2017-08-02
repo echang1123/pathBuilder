@@ -26,7 +26,10 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     //FIELDS
     //hashmap graph represents game board
     Map<Coordinate, Vertex<Integer>> graph;
+    //dimension of board
     int dimension;
+    //current number of moves made
+    int numMovesMade;
 
     //constructor
     public EEVEE() {
@@ -296,6 +299,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
      */
     @Override
     public void lastMove(PlayerMove m) {
+        numMovesMade++; //increase every time a move is made
         int player = m.getPlayerId();
         Vertex move = graph.get(m.getCoordinate()); //get move vertex to update
         move.setData(player); //update owner
@@ -355,14 +359,11 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         for (Coordinate c : graphKeys) { //for each entry in the graph,
             Vertex v = graph.get(c);
             PlayerMove move;
-            if (((Integer)v.getData() == 0) ){ //if vertex owner is 0, move available
-                if(player1) {
-                    move = new PlayerMove(c, 1); //if move available, create PlayerMove for player 1
-                    player1 = false;
-                }
-                else{
+            if (((Integer)v.getData() == 0) ){ //if vertex owner is 0, then move is available
+                if(numMovesMade%2 == 0) {      //if numMovesMade even, next player is player 1
+                    move = new PlayerMove(c, 1);                 }
+                else{                          //numMovesMade odd, next player is player 2
                     move = new PlayerMove(c, 2);
-                    player1 = true;
                 }
                 legalMoves.add(move);
             }
