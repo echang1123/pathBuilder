@@ -73,6 +73,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     }
 
     private HashMap<Vertex, Tuple> runDijkstra(Map<Coordinate, Vertex<Integer>> graph, int playerID) {
+        int otherPlayer = 3-playerID;
         HashMap paths = new HashMap<Vertex, Tuple>(); //new Hashmap holds (key[vertex], value[tuple: prev vertex, weight from origin])
         Set<Coordinate> graphKeys = graph.keySet(); //set of all the keys (Coordinates) in graph
         List vertices = new ArrayList<Vertex>(); //will contain a list of every vertex in graph
@@ -88,7 +89,9 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
                 start = v;
             }
             paths.put(v, tuple);
-            vertices.add(v);
+            if((Integer)v.getData() != otherPlayer) { //don't add vertices belonging to the other player, just add playerID and un-owned vertices
+                vertices.add(v);
+            }
         }
         boolean first = true;
         while (!vertices.isEmpty()) {
@@ -348,10 +351,19 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     public List allLegalMoves() {
         List legalMoves = new ArrayList<Coordinate>();
         Set<Coordinate> graphKeys = graph.keySet(); //set of all the keys (Coordinates) in graph
-        for (Coordinate c : graphKeys) { //make a hashmap with all of the vertices and set initial prevs+weights, make list of all vertices
+        boolean player1 = true;
+        for (Coordinate c : graphKeys) { //for each entry in the graph,
             Vertex v = graph.get(c);
+            PlayerMove move;
             if (((Integer)v.getData() == 0) ){ //if vertex owner is 0, move available
-                PlayerMove move = new PlayerMove(c, 1); //if move available, create PlayerMove for player 1
+                if(player1) {
+                    move = new PlayerMove(c, 1); //if move available, create PlayerMove for player 1
+                    player1 = false;
+                }
+                else{
+                    move = new PlayerMove(c, 2);
+                    player1 = true;
+                }
                 legalMoves.add(move);
             }
         }
@@ -378,7 +390,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
             System.out.println("END WEIGHT PLAYER 1: " + endTuple.getWeight()); //REMOVE
             System.out.println("MOVES FTW PLAYER 1: " + endTuple.getWeight() / 2);
             System.out.println("------------");
-
+/*debug help
             Set<Coordinate> graphKeys = graph.keySet();
             for(Coordinate c : graphKeys){
                 System.out.println("Coordinate: " + c.toString());
@@ -396,7 +408,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
                 last = getPrev(paths, last);
             }
             System.out.println("_____________________");
-
+*/
 
             return endTuple.getWeight() / 2;
         } else { //checking for Player2
