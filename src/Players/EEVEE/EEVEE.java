@@ -159,11 +159,6 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
             for (int col = 0; col < 2 * dim + 1; col++) {
                 Coordinate coordinate = new Coordinate(row, col);
                 Vertex v = new Vertex(-1); //default vertex data- corners will have -1, P1/P2 vertices will be 1 or 2, unowned will be 0
-                //DO CORNERS EVEN NEED A VERTEX? maybe to avoid null pointer? use try/catch?
-//       MADE FUNCTION FOR THIS         boolean atCorner = (row == 0 && col == 0) || //top left
-//                        (row == 0 && col == 2 * dimension) || //top right
-//                        (row == 2 * dimension && col == 0) || //bottom left
-//                        (row == 2 * dimension && col == 2 * dimension); //bottom right
                 if (!atCorner(row, col)) {
                     if (row == 0 || row == 2 * dim) { //TOP OR BOTTOM ROWS
                         v.setData(2); //top and bottoms rows all belong to P2
@@ -306,7 +301,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         updateEdges(move);
         graph.put(m.getCoordinate(), move); //put newly updated vertex back into graph/board representation
         System.out.println("Player: " + Integer.toString(m.getPlayerId()) + ", " + m.getCoordinate());
-        if(hasWonGame(1)||hasWonGame(2)){
+        if(hasWonGame(1)||hasWonGame(2)){ //if game is over, reset numMovesMade
             numMovesMade = 0;
         }
     }
@@ -351,33 +346,21 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
 
     }
 
+
+
     /** Generates the next move for this player.
      *
      * @return - a PlayerMove object representing the next move.
      */
     @Override
     public PlayerMove move() {
-
-        // start the clock
-        double start = System.currentTimeMillis();
-
-//        if(numMovesMade == 0){
-//            Coordinate c1 = new Coordinate(dimension*2-1, 1);
-//            return(new PlayerMove(c1, 1));
-//        }
-//        if(numMovesMade == 1){
-//            Coordinate c2 = new Coordinate(1, dimension*2-1);
-//            return(new PlayerMove(c2, 2));
-//        }
-
-
-        //need two implementations based on if player 1 or player 2- don't make invalid moves!!
         int myPlayerID = myPlayerID();
         int opponentID = 3-myPlayerID;
         System.out.println("numMovesMade "+ numMovesMade);
         System.out.println("I AM PLAYER " + myPlayerID + " and OPPONENT IS PLAYER " + opponentID);
         HashMap<Vertex, Tuple> paths = runDijkstra(graph, myPlayerID);
         ArrayList<PlayerMove> myPathToVictory = pathToVictory(myPlayerID, paths);
+
 
         //IF OTHER PLAYER INVALIDATED, JUST PICK NEXT AVAILABLE MOVE ON OWN PATH TO VICTORY HERE
 
@@ -415,15 +398,11 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
                 }
             }
         }
-        else if(fewestSegmentsToVictory(myPlayerID) < fewestSegmentsToVictory(opponentID)){
-            System.out.println("OFFENSIVE MOVE, I'M CLOSER TO WINNING");
-            //return myMove;
-        }
-
-        // compute the elapsed time
-        System.out.println("Elapsed time: " +
-                (System.currentTimeMillis() - start)/1000.0 + " seconds.");
-
+//        else if(fewestSegmentsToVictory(myPlayerID) < fewestSegmentsToVictory(opponentID)){
+//            System.out.println("OFFENSIVE MOVE, I'M CLOSER TO WINNING");
+//            //return myMove;
+//        }
+//
         return myMove; //no overlap in pathsToVictory, I am closer to winning
     }
 
