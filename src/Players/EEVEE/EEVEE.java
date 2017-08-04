@@ -25,11 +25,11 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
 
     //FIELDS
     //hashmap graph represents game board
-    Map<Coordinate, Vertex<Integer>> graph;
+    private Map<Coordinate, Vertex<Integer>> graph;
     //dimension of board
-    int dimension;
+    private int dimension;
     //current number of moves made
-    int numMovesMade;
+    private int numMovesMade;
 
     //constructor
     public EEVEE() {
@@ -347,24 +347,105 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
 
     @Override
     public PlayerMove move() {
-        return null;
+
+        // start the clock
+        double start = System.currentTimeMillis();
+
+        if(numMovesMade == 0){
+            Coordinate c1 = new Coordinate(dimension*2-1, 1);
+            return(new PlayerMove(c1, 1));
+        }
+        if(numMovesMade == 1){
+            Coordinate c2 = new Coordinate(1, dimension*2-1);
+            return(new PlayerMove(c2, 2));
+        }
+
+
+        //need two implementations based on if player 1 or player 2- don't make invalid moves!!
+        int myPlayerID = myPlayerID();
+        int opponentID = 3-myPlayerID;
+        HashMap<Vertex, Tuple> paths = runDijkstra(graph, myPlayerID);
+        ArrayList<PlayerMove> myPathToVictory = pathToVictory(myPlayerID, paths);
+
+        //IF OTHER PLAYER INVALIDATED, JUST PICK NEXT AVAILABLE MOVE ON OWN PATH TO VICTORY HERE
+
+
+        HashMap<Vertex, Tuple> opponentPaths = runDijkstra(graph, opponentID);
+        ArrayList<PlayerMove> opponentPathToVictory = pathToVictory(opponentID, opponentPaths);
+
+        List legalMoves = allLegalMoves();
+        ArrayList<PlayerMove> availableMoves = new ArrayList<>();
+
+        for(int i=0; i<myPathToVictory.size(); i++){ //if pathToVictory overlap exists make that move
+            PlayerMove move = myPathToVictory.get(i);
+            Coordinate c = move.getCoordinate();
+            Vertex v = graph.get(c);
+            if(((Integer) v.getData() == 0) && legalMoves.contains(move)){ //Vertex is unowned and is a legal move
+                if(opponentPathToVictory.contains(move)){
+                    return move;
+                }
+                availableMoves.add(move); //avoid re-checking owner = 0 & legal move if no overlap
+            }
+        }
+        PlayerMove myMove = availableMoves.get(0); //this is an available/legal move from myPathToVictory
+
+       // for(int i=0; i<availableMoves.size(); i++){// no overlap in pathsToVictory
+        if(fewestSegmentsToVictory(myPlayerID) > fewestSegmentsToVictory(opponentID)){ //Opponent is closer to winning , make move to block
+            for(int i = 0; i<opponentPathToVictory.size(); i++){
+                PlayerMove move = opponentPathToVictory.get(i);
+                Coordinate c = move.getCoordinate();
+                Vertex v = graph.get(c);
+                if(((Integer) v.getData() == 0) && legalMoves.contains(move)){ //Vertex is unowned and is a legal move
+                        return move; //block first available/legal move on opponent's path
+                }
+            }
+        }
+
+        // compute the elapsed time
+        System.out.println("Elapsed time: " +
+                (System.currentTimeMillis() - start)/1000.0 + " seconds.");
+
+
+        return myMove; //no overlap in pathsToVictory, I am closer to winning
+    }
+
+    private ArrayList<PlayerMove> pathToVictory(int PlayerID, HashMap<Vertex, Tuple> paths){
+        ArrayList roadToVictory = new ArrayList<PlayerMove>();
+        Tuple endTuple = getEndTuple(PlayerID, paths);
+        Coordinate start;
+        if(myPlayerID() == 1){
+            start = new Coordinate(1,0);
+        }
+        else{
+            start = new Coordinate(0,1);
+        }
+        System.out.println("End Tuple: " + endTuple.toString() + "\n previous tuples: ");
+        Tuple last = endTuple;
+        while(!(last.getCoordinate().equals(start))){
+            System.out.println(last.toString()); //INFINITE LOOP HERE
+            System.out.println("TEST");
+
+            PlayerMove m = new PlayerMove(last.getCoordinate(), PlayerID);
+            roadToVictory.add(m);
+            last = getPrev(paths, last);
+        }
+        System.out.println("PATH TO VICTORY METHOD: winning PlayerMove path!"); //REMOVE
+        for(int i = 0; i< roadToVictory.size(); i++){
+            System.out.println(roadToVictory.get(i).toString());
+        }
+        return roadToVictory;
     }
 
 
     @Override
     public List allLegalMoves() {
-        List legalMoves = new ArrayList<Coordinate>();
+        List legalMoves = new ArrayList<PlayerMove>();
         Set<Coordinate> graphKeys = graph.keySet(); //set of all the keys (Coordinates) in graph
         boolean player1 = true;
         for (Coordinate c : graphKeys) { //for each entry in the graph,
             Vertex v = graph.get(c);
-            PlayerMove move;
             if (((Integer)v.getData() == 0) ){ //if vertex owner is 0, then move is available
-                if(numMovesMade%2 == 0) {      //if numMovesMade even, next player is player 1
-                    move = new PlayerMove(c, 1);                 }
-                else{                          //numMovesMade odd, next player is player 2
-                    move = new PlayerMove(c, 2);
-                }
+                PlayerMove move = new PlayerMove(c, myPlayerID());
                 legalMoves.add(move);
             }
         }
@@ -374,23 +455,20 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
 
     @Override
     public int fewestSegmentsToVictory(int i) {
-
         /*
         run dijkstra based on player
         based on end vertex for player, get final edge weight and divide by 2
-
          */
-
         HashMap<Vertex, Tuple> paths = runDijkstra(graph, i);
         Vertex end;
         Tuple endTuple;
         if (i == 1) {
-            end = graph.get(new Coordinate(2 * dimension - 1, 2 * dimension));
-            endTuple = (Tuple) paths.get(end);
+            endTuple = getEndTuple(1, paths);
             // debug helper print statments- prints out Player 1 final path weight + board at game end
             System.out.println("END WEIGHT PLAYER 1: " + endTuple.getWeight()); //REMOVE
             System.out.println("MOVES FTW PLAYER 1: " + endTuple.getWeight() / 2);
             System.out.println("------------");
+
 /*debug help
             Set<Coordinate> graphKeys = graph.keySet();
             for(Coordinate c : graphKeys){
@@ -411,10 +489,10 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
             System.out.println("_____________________");
 */
 
+
             return endTuple.getWeight() / 2;
         } else { //checking for Player2
-            end = graph.get(new Coordinate(2 * dimension, 2 * dimension - 1));
-            endTuple = (Tuple) paths.get(end);
+            endTuple = getEndTuple(2, paths);
             // debug help- prints Player 2 final path weight at game end
             System.out.println("END WEIGHT PLAYER 2: " + endTuple.getWeight()); //REMOVE
             System.out.println("MOVES FTW PLAYER 2: " + endTuple.getWeight() / 2); //make integer
@@ -425,5 +503,28 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
 
     private Tuple getPrev(HashMap<Vertex, Tuple> paths, Tuple t){
         return paths.get(t.getVertex());
+    }
+
+    private Tuple getEndTuple(int PlayerID, HashMap<Vertex, Tuple> paths){
+        Vertex end;
+        Tuple endTuple;
+        if(PlayerID == 1){
+            end = graph.get(new Coordinate(2 * dimension - 1, 2 * dimension));
+            endTuple = (Tuple) paths.get(end);
+        }
+        else{
+            end = graph.get(new Coordinate(2 * dimension, 2 * dimension - 1));
+            endTuple = (Tuple) paths.get(end);
+        }
+        return endTuple;
+    }
+
+    private int myPlayerID(){
+        if(numMovesMade %2 == 0){
+            return 1;
+        }
+        else{
+            return 2;
+        }
     }
 }
