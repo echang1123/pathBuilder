@@ -218,7 +218,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
                 (row == 2 * dimension && col == 2 * dimension); //bottom right
     }
 
-        //EUGENE'S IMPLEMENTATION
+//        EUGENE'S IMPLEMENTATION
         /*graph = new HashMap<>();
         //set entire graph to 0
         for (int r = 0; r < 2 * dim + 1; r++) {
@@ -340,17 +340,28 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     }
 
 
+    /**May or may not need to implement.  Indicates that the other player has been invalidated.
+     *
+     */
     @Override
     public void otherPlayerInvalidated() {
 
     }
 
+    /** Generates the next move for this player.
+     *
+     * @return - a PlayerMove object representing the next move.
+     */
     @Override
     public PlayerMove move() {
         return null;
     }
 
 
+    /** Generate all legal moves for the given player's turn given the current game configuration.
+     *
+     * @return - a List of all legal PlayerMove objects. They do not have to be in any particular order.
+     */
     @Override
     public List allLegalMoves() {
         List legalMoves = new ArrayList<Coordinate>();
@@ -371,7 +382,11 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         return legalMoves;
     }
 
-
+    /**Given that a winning path still exists, computes fewest number of segments needed to win.
+     *
+     * @param i - playerId
+     * @return - the fewest number of segments to add to complete a path
+     */
     @Override
     public int fewestSegmentsToVictory(int i) {
 
