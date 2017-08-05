@@ -31,6 +31,9 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     //current number of moves made
     private int numMovesMade;
 
+    private static int PLAYER_ID;
+    private static int OPPONENT_ID;
+
     //constructor
     public EEVEE() {
     }
@@ -155,6 +158,8 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     public void initPlayer(int dim, int playerId) {
         graph = new HashMap<>();
         dimension = dim;
+        PLAYER_ID = playerId;
+        OPPONENT_ID = 3-playerId;
         for (int row = 0; row < 2 * dim + 1; row++) {
             for (int col = 0; col < 2 * dim + 1; col++) {
                 Coordinate coordinate = new Coordinate(row, col);
@@ -206,8 +211,8 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         }
     }
 
-        private boolean atCorner(int row, int col){
-            return (row == 0 && col == 0) || //top left
+    private boolean atCorner(int row, int col){
+        return (row == 0 && col == 0) || //top left
                 (row == 0 && col == 2 * dimension) || //top right
                 (row == 2 * dimension && col == 0) || //bottom left
                 (row == 2 * dimension && col == 2 * dimension); //bottom right
@@ -286,6 +291,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
             }
         }*/
 
+
     /**
      * Method called after every move is made.  The engine will only call this after it verifies the validity of
      * the move, so we do not need to verify the move provided.  It is guaranteed to be valid.
@@ -301,6 +307,14 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         updateEdges(move);
         graph.put(m.getCoordinate(), move); //put newly updated vertex back into graph/board representation
         System.out.println("Player: " + Integer.toString(m.getPlayerId()) + ", " + m.getCoordinate());
+
+//        if(player == 1 && (numMovesMade % 2 == 0 || numMovesMade == 0)){ //if player1's turn, and either a)numMoves is odd or b) on first move and numMoves = 0, increase numMoves
+//            numMovesMade++;
+//        }
+//        else if(player == 2 && numMovesMade % 2 == 1){ //if second player and current numMovesMade is even, will increase to be odd
+//            numMovesMade++;
+//        }
+
         if(hasWonGame(1)||hasWonGame(2)){ //if game is over, reset numMovesMade
             numMovesMade = 0;
         }
@@ -347,26 +361,21 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
     }
 
 
-
     /** Generates the next move for this player.
      *
      * @return - a PlayerMove object representing the next move.
      */
     @Override
     public PlayerMove move() {
-        int myPlayerID = myPlayerID();
-        int opponentID = 3-myPlayerID;
-        System.out.println("numMovesMade "+ numMovesMade);
-        System.out.println("I AM PLAYER " + myPlayerID + " and OPPONENT IS PLAYER " + opponentID);
-        HashMap<Vertex, Tuple> paths = runDijkstra(graph, myPlayerID);
-        ArrayList<PlayerMove> myPathToVictory = pathToVictory(myPlayerID, paths);
+        System.out.println("Current numMovesMade "+ numMovesMade);
+        System.out.println("I AM PLAYER " + PLAYER_ID + " and OPPONENT IS PLAYER " + OPPONENT_ID);
+        HashMap<Vertex, Tuple> paths = runDijkstra(graph, PLAYER_ID);
+        ArrayList<PlayerMove> myPathToVictory = pathToVictory(PLAYER_ID, paths);
 
+        //IF OTHER PLAYER INVALIDATED, JUST PICK NEXT AVAILABLE MOVE ON OWN PATH TO VICTORY
 
-        //IF OTHER PLAYER INVALIDATED, JUST PICK NEXT AVAILABLE MOVE ON OWN PATH TO VICTORY HERE
-
-
-        HashMap<Vertex, Tuple> opponentPaths = runDijkstra(graph, opponentID);
-        ArrayList<PlayerMove> opponentPathToVictory = pathToVictory(opponentID, opponentPaths);
+        HashMap<Vertex, Tuple> opponentPaths = runDijkstra(graph, OPPONENT_ID);
+        ArrayList<PlayerMove> opponentPathToVictory = pathToVictory(OPPONENT_ID, opponentPaths);
 
         List legalMoves = allLegalMoves();
         ArrayList<PlayerMove> availableMoves = new ArrayList<>();
@@ -376,7 +385,7 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
             Vertex v = graph.get(move.getCoordinate());
             if(((Integer) v.getData() == 0) && legalMoves.contains(move)){ //Vertex is unowned and is a legal move
 
-                PlayerMove oppMove = new PlayerMove(move.getCoordinate(), opponentID); //opponent's list of PlayerMoves contain their ID
+                PlayerMove oppMove = new PlayerMove(move.getCoordinate(), OPPONENT_ID); //opponent's list of PlayerMoves contain their ID
                 if(opponentPathToVictory.contains(oppMove)){
                     System.out.println("\n BLOCKED OVERLAP \n"); //REMOVE
                     return move;
@@ -386,11 +395,11 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         }
         PlayerMove myMove = availableMoves.get(availableMoves.size()-1); //this is an available/legal move from myPathToVictory
 
-       // for(int i=0; i<availableMoves.size(); i++){// no overlap in pathsToVictory
-        if(fewestSegmentsToVictory(myPlayerID) > fewestSegmentsToVictory(opponentID)){ //Opponent is closer to winning , make move to block
+       // no overlap in pathsToVictory and opponent is closer to winning- move to block them
+        if(fewestSegmentsToVictory(PLAYER_ID) > fewestSegmentsToVictory(OPPONENT_ID)){
             for(int i = 0; i<opponentPathToVictory.size(); i++){
                 PlayerMove oppMove = opponentPathToVictory.get(i);
-                PlayerMove move = new PlayerMove(oppMove.getCoordinate(), myPlayerID);
+                PlayerMove move = new PlayerMove(oppMove.getCoordinate(), PLAYER_ID);
                 Vertex v = graph.get(oppMove.getCoordinate());
                 if(((Integer) v.getData() == 0) && legalMoves.contains(move)){ //Vertex is unowned and is a legal move
                     System.out.println("\n BLOCK DEFENSIVE MOVE \n");
@@ -446,12 +455,13 @@ public class EEVEE implements PlayerModulePart1, PlayerModulePart2 {
         for (Coordinate c : graphKeys) { //for each entry in the graph,
             Vertex v = graph.get(c);
             if (((Integer)v.getData() == 0) ){ //if vertex owner is 0, then move is available
-                PlayerMove move = new PlayerMove(c, myPlayerID());
+                PlayerMove move = new PlayerMove(c, PLAYER_ID); //assumes this is called on your own turn
                 legalMoves.add(move);
             }
         }
         return legalMoves;
     }
+
 
     /**Given that a winning path still exists, computes fewest number of segments needed to win.
      *

@@ -11,7 +11,7 @@
 # size (2*DIM+1) by (2*DIM+1).
 # DIM has a default value of 6 if it is not specified in
 # the configuration file.
-DIM 6
+DIM 7
 
 # GAMES is used to indicate the number of games to
 # play between the two players.  It is considered
@@ -39,7 +39,7 @@ GAMES 1
 # Valid choices for AI players include:
 # CARELESS, RANDOM, DEFENSIVE, OKPLAYER, GOODPLAYER, TOUGHPLAYER
 # as well as any module you create to play the game.
-PLAYERS EEVEE,GOODPLAYER
+PLAYERS EEVEE,CARELESS
 
 # TIMELIMIT is used to restrict player module computation.
 # It must be an integer in the range 1-100.
